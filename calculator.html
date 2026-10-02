@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="calculator.css" />
+    <title>iOS Calculator</title>
+</head>
+
+<body>
+    <main>
+        <section>
+            <div class="menu">
+                <span><i class="bi bi-list"></i></span>
+            </div>
+            <div class="display">
+                <div class="output_screen">
+                    <input type="text" id="output_S" />
+                </div>
+                <div class="input_screen">
+                    <input type="text" id="input_S" placeholder="0" />
+                </div>
+            </div>
+            <div class="input-grid">
+                <button onclick="clearr()" class="inp" id="ac-btn">C</button>
+                <button onclick="calculate('±')" class="inp">±</button>
+                <button onclick="calculate('%')" class="inp">%</button>
+                <button onclick="calculate('/')" class="inp">÷</button>
+                <button onclick="calculate('7')" class="inp">7</button>
+                <button onclick="calculate('8')" class="inp">8</button>
+                <button onclick="calculate('9')" class="inp">9</button>
+                <button onclick="calculate('*')" class="inp">x</button>
+                <button onclick="calculate('4')" class="inp">4</button>
+                <button onclick="calculate('5')" class="inp">5</button>
+                <button onclick="calculate('6')" class="inp">6</button>
+                <button onclick="calculate('-')" class="inp">-</button>
+                <button onclick="calculate('1')" class="inp">1</button>
+                <button onclick="calculate('2')" class="inp">2</button>
+                <button onclick="calculate('3')" class="inp">3</button>
+                <button onclick="calculate('+')" class="inp">+</button>
+                <button onclick="" class="inp"><i class="bi bi-calculator"></i></button>
+                <button onclick="calculate('0')" class="inp">0</button>
+                <button onclick="calculate('.')" class="inp">.</button>
+                <button onclick="answer()" class="inp">=</button>
+            </div>
+        </section>
+    </main>
+</body>
+
+<script>
+    const inp = document.getElementById("input_S");
+    const out = document.getElementById("output_S");
+    const ac = document.getElementById("ac-btn");
+
+    function calculate(x) {
+        inp.value += x;
+    }
+
+    function clearr() {
+        if (inp.value.length > 0 && out.value.length > 0) {
+            inp.value = "";
+            out.value = "";
+            ac.innerHTML = "C";
+        } else if (inp.value.length > 0) {
+            inp.value = inp.value.slice(0, -1);
+        }
+    }
+
+    function answer() {
+        try {
+            const expression = inp.value
+            const result = eval(inp.value)
+            inp.value = result;
+            out.value = expression;
+            if (inp.value.length > 0 && out.value.length > 0) {
+                ac.innerHTML = "AC";
+            } else {
+                ac.innerHTML = "C";
+            }
+        } catch {
+            out.value = "Invalid";
+        }
+    }
+</script>
+
+</html>
