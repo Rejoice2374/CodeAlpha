@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator — From Scratch</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fa;
+      color: #111827;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .app {
+      width: min(760px, 100%);
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.08);
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .sub { margin: 0 0 24px; color: #6b7280; }
+    label { display: block; font-weight: 700; margin-bottom: 8px; }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font: inherit;
+      outline: none;
+    }
+    textarea:focus { border-color: #111827; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+      align-items: center;
+    }
+    select, button {
+      font: inherit;
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      background: white;
+      cursor: pointer;
+    }
+    button {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+      font-weight: 700;
+    }
+    button.secondary {
+      background: white;
+      color: #111827;
+    }
+    .result {
+      margin-top: 26px;
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+    }
+    canvas {
+      width: min(420px, 100%);
+      height: auto;
+      image-rendering: pixelated;
+      border: 1px solid #e5e7eb;
+      background: white;
+    }
+    .info {
+      color: #6b7280;
+      font-size: 14px;
+      text-align: center;
+    }
+    .error {
+      color: #b91c1c;
+      background: #fef2f2;
+      padding: 10px 12px;
+      border-radius: 10px;
+      width: 100%;
+    }
+    code { background: #f3f4f6; padding: 2px 5px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>QR Code Generator</h1>
+    <p class="sub">A QR encoder implemented in JavaScript without a QR-code library.</p>
+
+    <label for="text">Text or URL</label>
+    <textarea id="text">https://favochino.com</textarea>
+
+    <div class="controls">
+      <label style="margin:0;">
+        Error correction
+        <select id="ecc">
+          <option value="L">L — ~7%</option>
+          <option value="M" selected>M — ~15%</option>
+          <option value="Q">Q — ~25%</option>
+          <option value="H">H — ~30%</option>
+        </select>
+      </label>
+
+      <button id="generate">Generate QR</button>
+      <button id="download" class="secondary">Download PNG</button>
+    </div>
+
+    <div class="result">
+      <canvas id="qr"></canvas>
+      <div id="info" class="info"></div>
+      <div id="error" class="error" hidden></div>
+    </div>
+  </main>
+
+<script>
+"use strict";
+
+/*
+  QR Code generator from scratch.
+
+  Scope:
+  - Byte mode (UTF-8)
+  - QR versions 1–10
+  - Error correction L/M/Q/H
+  - Reed-Solomon ECC over GF(256)
+  - Finder, timing and alignment patterns
+  - Data placement
+  - All 8 masks
+  - Mask penalty selection
+  - Format information
+  - Canvas rendering
+
+  This is intentionally educational. For production software,
+  use a heavily tested QR implementation.
+*/
+
+// ------------------------------------------------------------
+// QR VERSION / CAPACITY TABLE
+// Each row: [totalCodewords, [L,M,Q,H dataCodewords]]
+// Alignment pattern centers are given separately.
+// ------------------------------------------------------------
+
+const VERSION_INFO = {
+  1:  { total: 26,  data: {L:19,  M:16,  Q:13,  H:9},  align: [] },
+  2:  { total: 44,  data: {L:34,  M:28,  Q:22,  H:16}, align: [6,18] },
+  3:  { total: 70,  data: {L:55,  M:44,  Q:34,  H:26}, align: [6,22] },
+  4:  { total: 100, data: {L:80,  M:64,  Q:48,  H:36}, align: [6,26] },
+  5:  { total: 134, data: {L:108, M:86,  Q:62,  H:46}, align: [6,30] },
+  6:  { total: 172, data: {L:136, M:108, Q:76, H:60}, align: [6,34] },
+  7:  { total: 196, data: {L:156, M:124, Q:88, H:66}, align: [6,22,38] },
+  8:  { total: 242, data: {L:194, M:154, Q:110, H:86}, align: [6,24,42] },
+  9:  { total: 292, data: {L:232, M:182, Q:132, H:100}, align: [6,26,46] },
+  10: { total: 346, data: {L:274, M:216, Q:154, H:122}, align: [6,28,50] }
+};
+
+const ECC_FORMAT_BITS = {
+  L: 1,
+  M: 0,
+  Q: 3,
+  H: 2
+};
+
+const canvas = document.getElementById("qr");
+const ctx = canvas.getContext("2d");
+const input = document.getElementById("text");
+const eccSelect = document.getElementById("ecc");
+const info = document.getElementById("info");
+const errorBox = document.getElementById("error");
+
+// ------------------------------------------------------------
+// Bit buffer
+// ------------------------------------------------------------
+
+class BitBuffer {
+  constructor() {
+    this.bits = [];
+  }
+
+  put(value, length) {
+    for (let i = length - 1; i >= 0; i--) {
+      this.bits.push((value >>> i) & 1);
+    }
+  }
+
+  putBits(bitString) {
+    for (const ch of bitString) this.bits.push(ch === "1" ? 1 : 0);
+  }
+
+  get length() {
+    return this.bits.length;
+  }
+
+  toBytes() {
+    const bytes = [];
+    for (let i = 0; i < this.bits.length; i += 8) {
+      let value = 0;
+      for (let j = 0; j < 8; j++) {
+        value = (value << 1) | (this.bits[i + j] ?? 0);
+      }
+      bytes.push(value);
+    }
+    return bytes;
+  }
+}
+
+// ------------------------------------------------------------
+// GF(256) arithmetic used by Reed-Solomon
+// Primitive polynomial: x^8 + x^4 + x^3 + x^2 + 1 = 0x11D
+// ------------------------------------------------------------
+
+const EXP = new Array(512);
+const LOG = new Array(256);
+
+(function initGaloisField() {
+  let x = 1;
+
+  for (let i = 0; i < 255; i++) {
+    EXP[i] = x;
+    LOG[x] = i;
+    x <<= 1;
+    if (x & 0x100) x ^= 0x11D;
+  }
+
+  for (let i = 255; i < 512; i++) {
+    EXP[i] = EXP[i - 255];
+  }
+
+  LOG[0] = -Infinity;
+})();
+
+function gfMultiply(a, b) {
+  if (a === 0 || b === 0) return 0;
+  return EXP[LOG[a] + LOG[b]];
+}
+
+// Polynomial multiplication over GF(256)
+function polyMultiply(a, b) {
+  const result = new Array(a.length + b.length - 1).fill(0);
+
+  for (let i = 0; i < a.length; i++) {
+    for (let j = 0; j < b.length; j++) {
+      result[i + j] ^= gfMultiply(a[i], b[j]);
+    }
+  }
+
+  return result;
+}
+
+// Generator polynomial:
+// (x - α^0)(x - α^1)...(x - α^(degree-1))
+function reedSolomonGenerator(degree) {
+  let poly = [1];
+
+  for (let i = 0; i < degree; i++) {
+    poly = polyMultiply(poly, [1, EXP[i]]);
+  }
+
+  return poly;
+}
+
+function reedSolomonRemainder(data, degree) {
+  const generator = reedSolomonGenerator(degree);
+  const result = new Array(degree).fill(0);
+
+  for (const byte of data) {
+    const factor = byte ^ result[0];
+
+    result.shift();
+    result.push(0);
+
+    for (let i = 0; i < degree; i++) {
+      result[i] ^= gfMultiply(generator[i + 1], factor);
+    }
+  }
+
+  return result;
+}
+
+// ------------------------------------------------------------
+// Choose smallest version that can hold the payload.
+// Byte mode character count for versions 1–9 is 8 bits.
+// For versions 10–40 it is 16 bits.
+// ------------------------------------------------------------
+
+function chooseVersion(bytesLength, ecc) {
+  for (let version = 1; version <= 10; version++) {
+    const countBits = version <= 9 ? 8 : 16;
+    const capacityBits = VERSION_INFO[version].data[ecc] * 8;
+    const needed = 4 + countBits + bytesLength * 8;
+
+    // 4 = byte mode indicator
+    if (needed <= capacityBits) return version;
+  }
+
+  throw new Error("Input is too large for this educational version (1–10).");
+}
+
+// ------------------------------------------------------------
+// Encode UTF-8 text into QR byte-mode codewords.
+// ------------------------------------------------------------
+
+function makeDataCodewords(text, version, ecc) {
+  const bytes = Array.from(new TextEncoder().encode(text));
+  const capacityBytes = VERSION_INFO[version].data[ecc];
+  const capacityBits = capacityBytes * 8;
+  const countBits = version <= 9 ? 8 : 16;
+
+  if (bytes.length >= (1 << countBits)) {
+    throw new Error("Input is too long for this QR version.");
+  }
+
+  const bits = new BitBuffer();
+
+  // Byte mode = 0100
+  bits.put(0b0100, 4);
+
+  // Character count = number of UTF-8 bytes
+  bits.put(bytes.length, countBits);
+
+  // Payload
+  for (const byte of bytes) bits.put(byte, 8);
+
+  // Terminator, up to 4 bits
+  const terminatorLength = Math.min(4, capacityBits - bits.length);
+  bits.put(0, terminatorLength);
+
+  // Pad to byte boundary
+  while (bits.length % 8 !== 0) bits.put(0, 1);
+
+  let data = bits.toBytes();
+
+  // Pad codewords
+  const pads = [0xEC, 0x11];
+  let padIndex = 0;
+
+  while (data.length < capacityBytes) {
+    data.push(pads[padIndex]);
+    padIndex ^= 1;
+  }
+
+  return data;
+}
+
+// ------------------------------------------------------------
+// Split codewords into blocks.
+// The table below is the standard QR block structure for
+// versions 1–10.
+// Each entry:
+// [numberOfBlocksGroup1, dataPerBlockGroup1,
+//  numberOfBlocksGroup2, dataPerBlockGroup2,
+//  eccCodewordsPerBlock]
+// ------------------------------------------------------------
+
+const BLOCKS = {
+  1:  {L:[1,19,0,0,7],   M:[1,16,0,0,10],  Q:[1,13,0,0,13],  H:[1,9,0,0,17]},
+  2:  {L:[1,34,0,0,10],  M:[1,28,0,0,16],  Q:[1,22,0,0,22],  H:[1,16,0,0,28]},
+  3:  {L:[1,55,0,0,15],  M:[1,44,0,0,26],  Q:[2,17,0,0,18],  H:[2,13,0,0,22]},
+  4:  {L:[1,80,0,0,20],  M:[2,32,0,0,18],  Q:[2,24,0,0,26],  H:[4,9,0,0,16]},
+  5:  {L:[1,108,0,0,26], M:[2,43,0,0,24],  Q:[2,15,2,16,18], H:[2,11,2,12,22]},
+  6:  {L:[2,68,0,0,18],  M:[4,27,0,0,16],  Q:[4,19,0,0,24], H:[4,15,0,0,28]},
+  7:  {L:[2,78,0,0,20], M:[4,31,0,0,18],  Q:[2,14,4,15,18], H:[4,13,1,14,26]},
+  8:  {L:[2,97,0,0,24], M:[2,38,2,39,22],  Q:[4,18,2,19,22], H:[4,14,2,15,26]},
+  9:  {L:[2,116,0,0,30],M:[3,36,2,37,22],  Q:[4,16,4,17,20], H:[4,12,4,13,24]},
+  10: {L:[2,68,2,69,18], M:[4,43,1,44,26],  Q:[6,19,2,20,24], H:[6,15,2,16,28]}
+};
+
+function makeBlocks(data, version, ecc) {
+  const [g1Count, g1Data, g2Count, g2Data, eccCount] = BLOCKS[version][ecc];
+
+  const blocks = [];
+  let offset = 0;
+
+  for (let i = 0; i < g1Count; i++) {
+    blocks.push({
+      data: data.slice(offset, offset + g1Data),
+      ecc: null
+    });
+    offset += g1Data;
+  }
+
+  for (let i = 0; i < g2Count; i++) {
+    blocks.push({
+      data: data.slice(offset, offset + g2Data),
+      ecc: null
+    });
+    offset += g2Data;
+  }
+
+  for (const block of blocks) {
+    block.ecc = reedSolomonRemainder(block.data, eccCount);
+  }
+
+  return blocks;
+}
+
+function interleaveBlocks(blocks) {
+  const result = [];
+
+  const maxData = Math.max(...blocks.map(b => b.data.length));
+  for (let i = 0; i < maxData; i++) {
+    for (const block of blocks) {
+      if (i < block.data.length) result.push(block.data[i]);
+    }
+  }
+
+  const maxEcc = Math.max(...blocks.map(b => b.ecc.length));
+  for (let i = 0; i < maxEcc; i++) {
+    for (const block of blocks) {
+      if (i < block.ecc.length) result.push(block.ecc[i]);
+    }
+  }
+
+  return result;
+}
+
+// ------------------------------------------------------------
+// Matrix helpers
+// null = unused / data can be placed here
+// 0 = white
+// 1 = black
+// ------------------------------------------------------------
+
+function createMatrix(version) {
+  const size = 21 + 4 * (version - 1);
+  return Array.from({length: size}, () => Array(size).fill(null));
+}
+
+function setModule(matrix, row, col, value) {
+  if (
+    row >= 0 && row < matrix.length &&
+    col >= 0 && col < matrix.length
+  ) {
+    matrix[row][col] = value ? 1 : 0;
+  }
+}
+
+function addFinderPattern(matrix, row, col) {
+  for (let r = -1; r <= 7; r++) {
+    for (let c = -1; c <= 7; c++) {
+      const inside = r >= 0 && r <= 6 && c >= 0 && c <= 6;
+
+      let value = 0;
+
+      if (inside) {
+        value =
+          r === 0 || r === 6 ||
+          c === 0 || c === 6 ||
+          (r >= 2 && r <= 4 && c >= 2 && c <= 4)
+            ? 1 : 0;
+      }
+
+      setModule(matrix, row + r, col + c, value);
+    }
+  }
+}
+
+function addFinderPatterns(matrix) {
+  const size = matrix.length;
+
+  addFinderPattern(matrix, 0, 0);
+  addFinderPattern(matrix, 0, size - 7);
+  addFinderPattern(matrix, size - 7, 0);
+}
+
+function addTimingPatterns(matrix) {
+  const size = matrix.length;
+
+  for (let i = 8; i < size - 8; i++) {
+    if (matrix[6][i] === null) matrix[6][i] = i % 2 === 0 ? 1 : 0;
+    if (matrix[i][6] === null) matrix[i][6] = i % 2 === 0 ? 1 : 0;
+  }
+}
+
+function addAlignmentPattern(matrix, row, col) {
+  for (let r = -2; r <= 2; r++) {
+    for (let c = -2; c <= 2; c++) {
+      const distance = Math.max(Math.abs(r), Math.abs(c));
+      matrix[row + r][col + c] = distance === 1 ? 0 : 1;
+    }
+  }
+}
+
+function addAlignmentPatterns(matrix, version) {
+  if (version === 1) return;
+
+  const positions = VERSION_INFO[version].align;
+
+  for (const row of positions) {
+    for (const col of positions) {
+      // Don't place over finder patterns.
+      const size = matrix.length;
+
+      const overlapsTopLeft = row < 9 && col < 9;
+      const overlapsTopRight = row < 9 && col > size - 10;
+      const overlapsBottomLeft = row > size - 10 && col < 9;
+
+      if (
+        overlapsTopLeft ||
+        overlapsTopRight ||
+        overlapsBottomLeft
+      ) continue;
+
+      addAlignmentPattern(matrix, row, col);
+    }
+  }
+}
+
+function reserveFormatAreas(matrix) {
+  const size = matrix.length;
+
+  // Around top-left finder
+  for (let i = 0; i < 9; i++) {
+    if (matrix[8][i] === null) matrix[8][i] = 0;
+    if (matrix[i][8] === null) matrix[i][8] = 0;
+  }
+
+  // Around top-right / bottom-left
+  for (let i = 0; i < 8; i++) {
+    if (matrix[8][size - 1 - i] === null) {
+      matrix[8][size - 1 - i] = 0;
+    }
+
+    if (matrix[size - 1 - i][8] === null) {
+      matrix[size - 1 - i][8] = 0;
+    }
+  }
+
+  // Fixed dark module
+  matrix[size - 8][8] = 1;
+}
+
+function setupMatrix(version) {
+  const matrix = createMatrix(version);
+
+  addFinderPatterns(matrix);
+  addTimingPatterns(matrix);
+  addAlignmentPatterns(matrix, version);
+  reserveFormatAreas(matrix);
+
+  return matrix;
+}
+
+// ------------------------------------------------------------
+// Place interleaved codeword bits into remaining matrix cells.
+// QR uses a vertical zigzag, moving two columns at a time.
+// ------------------------------------------------------------
+
+function getDataBits(codewords) {
+  const bits = [];
+
+  for (const byte of codewords) {
+    for (let i = 7; i >= 0; i--) {
+      bits.push((byte >>> i) & 1);
+    }
+  }
+
+  return bits;
+}
+
+function placeDataBits(matrix, bits) {
+  const size = matrix.length;
+  let bitIndex = 0;
+  let upward = true;
+
+  // Right-to-left column pairs.
+  for (let col = size - 1; col >= 1; col -= 2) {
+
+    // Column 6 is reserved for the vertical timing pattern.
+    if (col === 6) col--;
+
+    for (let i = 0; i < size; i++) {
+      const row = upward ? size - 1 - i : i;
+
+      for (let c = 0; c < 2; c++) {
+        const currentCol = col - c;
+
+        if (matrix[row][currentCol] !== null) continue;
+
+        matrix[row][currentCol] =
+          bitIndex < bits.length ? bits[bitIndex++] : 0;
+      }
+    }
+
+    upward = !upward;
+  }
+
+  if (bitIndex !== bits.length) {
+    throw new Error("Internal error: not all data bits were placed.");
+  }
+}
+
+// ------------------------------------------------------------
+// Format information
+// ------------------------------------------------------------
+
+function formatBch(value) {
+  // Generator polynomial x^10 + x^8 + x^5 + x^4 + x^2 + x + 1
+  const generator = 0x537;
+  let data = value << 10;
+
+  while (dataBitLength(data) >= dataBitLength(generator)) {
+    data ^= generator << (dataBitLength(data) - dataBitLength(generator));
+  }
+
+  return ((value << 10) | data) ^ 0x5412;
+}
+
+function dataBitLength(value) {
+  let length = 0;
+  while (value !== 0) {
+    length++;
+    value >>>= 1;
+  }
+  return length;
+}
+
+function writeFormatBits(matrix, ecc, mask) {
+  const size = matrix.length;
+  const format = formatBch(
+    (ECC_FORMAT_BITS[ecc] << 3) | mask
+  );
+
+  // Copy to the 15 fixed positions around the top-left finder.
+  const bits = [];
+  for (let i = 14; i >= 0; i--) {
+    bits.push((format >>> i) & 1);
+  }
+
+  // Vertical portion
+  const vertical = [
+    [0,8],[1,8],[2,8],[3,8],[4,8],[5,8],
+    [7,8],[8,8],[8,7],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0]
+  ];
+
+  for (let i = 0; i < 15; i++) {
+    matrix[vertical[i][0]][vertical[i][1]] = bits[i];
+  }
+
+  // Horizontal portion
+  const horizontal = [
+    [8,size-1],[8,size-2],[8,size-3],[8,size-4],[8,size-5],[8,size-6],
+    [8,size-7],[8,size-8],[size-7,8],[size-6,8],[size-5,8],
+    [size-4,8],[size-3,8],[size-2,8],[size-1,8]
+  ];
+
+  for (let i = 0; i < 15; i++) {
+    matrix[horizontal[i][0]][horizontal[i][1]] = bits[i];
+  }
+
+  // Dark module is already fixed by setupMatrix.
+  matrix[size - 8][8] = 1;
+}
+
+// ------------------------------------------------------------
+// Masks
+// ------------------------------------------------------------
+
+function maskCondition(mask, row, col) {
+  switch (mask) {
+    case 0: return (row + col) % 2 === 0;
+    case 1: return row % 2 === 0;
+    case 2: return col % 3 === 0;
+    case 3: return (row + col) % 3 === 0;
+    case 4: return (Math.floor(row / 2) + Math.floor(col / 3)) % 2 === 0;
+    case 5: return ((row * col) % 2 + (row * col) % 3) === 0;
+    case 6: return (((row * col) % 2 + (row * col) % 3) % 2) === 0;
+    case 7: return (((row * col) % 3 + (row + col) % 2) % 2) === 0;
+    default: throw new Error("Invalid mask");
+  }
+}
+
+function applyMask(baseMatrix, mask, ecc) {
+  const matrix = baseMatrix.map(row => row.slice());
+  const size = matrix.length;
+
+  // Data modules are not explicitly tagged in this simple
+  // implementation, so we recreate the reserved map.
+  const reserved = createMatrix(sizeToVersion(size));
+  addFinderPatterns(reserved);
+  addTimingPatterns(reserved);
+  addAlignmentPatterns(reserved, sizeToVersion(size));
+  reserveFormatAreas(reserved);
+
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (reserved[r][c] === null) {
+        if (maskCondition(mask, r, c)) {
+          matrix[r][c] ^= 1;
+        }
+      }
+    }
+  }
+
+  writeFormatBits(matrix, ecc, mask);
+
+  return matrix;
+}
+
+function sizeToVersion(size) {
+  return Math.floor((size - 17) / 4);
+}
+
+// ------------------------------------------------------------
+// QR penalty rules
+// ------------------------------------------------------------
+
+function penaltyScore(matrix) {
+  const size = matrix.length;
+  let score = 0;
+
+  // Rule 1: runs of same color.
+  for (let r = 0; r < size; r++) {
+    let runColor = matrix[r][0];
+    let runLength = 1;
+
+    for (let c = 1; c < size; c++) {
+      if (matrix[r][c] === runColor) {
+        runLength++;
+      } else {
+        if (runLength >= 5) score += 3 + (runLength - 5);
+        runColor = matrix[r][c];
+        runLength = 1;
+      }
+    }
+
+    if (runLength >= 5) score += 3 + (runLength - 5);
+  }
+
+  for (let c = 0; c < size; c++) {
+    let runColor = matrix[0][c];
+    let runLength = 1;
+
+    for (let r = 1; r < size; r++) {
+      if (matrix[r][c] === runColor) {
+        runLength++;
+      } else {
+        if (runLength >= 5) score += 3 + (runLength - 5);
+        runColor = matrix[r][c];
+        runLength = 1;
+      }
+    }
+
+    if (runLength >= 5) score += 3 + (runLength - 5);
+  }
+
+  // Rule 2: 2x2 blocks.
+  for (let r = 0; r < size - 1; r++) {
+    for (let c = 0; c < size - 1; c++) {
+      const a = matrix[r][c];
+      if (
+        matrix[r][c+1] === a &&
+        matrix[r+1][c] === a &&
+        matrix[r+1][c+1] === a
+      ) score += 3;
+    }
+  }
+
+  // Rule 3: finder-like 1:1:3:1:1 pattern.
+  const pattern = [1,0,1,1,1,0,1];
+
+  function matchesRow(r, c) {
+    for (let i = 0; i < 7; i++) {
+      if (matrix[r][c+i] !== pattern[i]) return false;
+    }
+    return true;
+  }
+
+  function matchesCol(r, c) {
+    for (let i = 0; i < 7; i++) {
+      if (matrix[r+i][c] !== pattern[i]) return false;
+    }
+    return true;
+  }
+
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c <= size - 7; c++) {
+      if (matchesRow(r, c)) score += 40;
+    }
+  }
+
+  for (let c = 0; c < size; c++) {
+    for (let r = 0; r <= size - 7; r++) {
+      if (matchesCol(r, c)) score += 40;
+    }
+  }
+
+  // Rule 4: dark/light balance.
+  let dark = 0;
+
+  for (const row of matrix) {
+    for (const cell of row) {
+      if (cell === 1) dark++;
+    }
+  }
+
+  const total = size * size;
+  const percent = (dark * 100) / total;
+  score += Math.floor(Math.abs(percent - 50) / 5) * 10;
+
+  return score;
+}
+
+// ------------------------------------------------------------
+// Build a QR matrix for one input.
+// ------------------------------------------------------------
+
+function buildQR(text, ecc) {
+  const bytes = Array.from(new TextEncoder().encode(text));
+  const version = chooseVersion(bytes.length, ecc);
+
+  const dataCodewords = makeDataCodewords(text, version, ecc);
+  const blocks = makeBlocks(dataCodewords, version, ecc);
+  const codewords = interleaveBlocks(blocks);
+  const bits = getDataBits(codewords);
+
+  const base = setupMatrix(version);
+  placeDataBits(base, bits);
+
+  let bestMatrix = null;
+  let bestMask = 0;
+  let bestScore = Infinity;
+
+  for (let mask = 0; mask < 8; mask++) {
+    const candidate = applyMask(base, mask, ecc);
+    const score = penaltyScore(candidate);
+
+    if (score < bestScore) {
+      bestScore = score;
+      bestMask = mask;
+      bestMatrix = candidate;
+    }
+  }
+
+  return {
+    matrix: bestMatrix,
+    version,
+    mask: bestMask,
+    score: bestScore,
+    ecc,
+    bytes: bytes.length
+  };
+}
+
+// ------------------------------------------------------------
+// Render to Canvas.
+// ------------------------------------------------------------
+
+function renderQR(matrix) {
+  const quiet = 4;
+  const moduleCount = matrix.length;
+  const scale = Math.max(4, Math.floor(420 / (moduleCount + quiet * 2)));
+  const size = (moduleCount + quiet * 2) * scale;
+
+  canvas.width = size;
+  canvas.height = size;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.fillStyle = "#000000";
+
+  for (let r = 0; r < moduleCount; r++) {
+    for (let c = 0; c < moduleCount; c++) {
+      if (matrix[r][c]) {
+        ctx.fillRect(
+          (c + quiet) * scale,
+          (r + quiet) * scale,
+          scale,
+          scale
+        );
+      }
+    }
+  }
+}
+
+// ------------------------------------------------------------
+// UI
+// ------------------------------------------------------------
+
+function generate() {
+  errorBox.hidden = true;
+  errorBox.textContent = "";
+
+  try {
+    const text = input.value;
+
+    if (!text) {
+      throw new Error("Enter some text or a URL.");
+    }
+
+    const result = buildQR(text, eccSelect.value);
+
+    renderQR(result.matrix);
+
+    info.textContent =
+      `Version ${result.version} · ${result.matrix.length}×${result.matrix.length} modules · ` +
+      `ECC ${result.ecc} · Mask ${result.mask} · ${result.bytes} UTF-8 bytes`;
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.hidden = false;
+  }
+}
+
+document.getElementById("generate").addEventListener("click", generate);
+
+document.getElementById("download").addEventListener("click", () => {
+  canvas.toBlob(blob => {
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "qr-code.png";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }, "image/png");
+});
+
+input.addEventListener("keydown", event => {
+  if (event.ctrlKey && event.key === "Enter") {
+    generate();
+  }
+});
+
+generate();
+</script>
+</body>
+</html>

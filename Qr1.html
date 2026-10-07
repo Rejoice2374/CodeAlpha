@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR1</title>
+</head>
+
+<body>
+    <main class="app">
+        <h1>QR Code Generator</h1>
+        <p class="sub">A QR encoder implemented in JavaScript without a QR-code library.</p>
+
+        <label for="text">Text or URL</label>
+        <textarea id="text">https://favochino.com</textarea>
+
+        <div class="controls">
+            <label style="margin:0;">
+                Error correction
+                <select id="ecc">
+                    <option value="L">L — ~7%</option>
+                    <option value="M" selected>M — ~15%</option>
+                    <option value="Q">Q — ~25%</option>
+                    <option value="H">H — ~30%</option>
+                </select>
+            </label>
+
+            <button id="generate">Generate QR</button>
+            <button id="download" class="secondary">Download PNG</button>
+        </div>
+
+        <div class="result">
+            <canvas id="qr"></canvas>
+            <div id="info" class="info"></div>
+            <div id="error" class="error" hidden></div>
+        </div>
+    </main>
+
+    <script src="qr.js"></script>
+</body>
+
+</html>
