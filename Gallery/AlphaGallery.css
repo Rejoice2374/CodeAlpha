@@ -1,0 +1,283 @@
+body {
+  margin: 0%;
+  padding: 0%;
+  box-sizing: border-box;
+  height: 100vh;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  overflow-x: hidden;
+}
+
+.slabo-h2 {
+  font-family: "Slabo 13px", serif;
+  font-weight: 400;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+.montserrat-s {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+section {
+  position: relative;
+  background-image: url("gallery_intro.jpg");
+  background-size: cover;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+}
+
+.entry {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.greeting {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.greeting span {
+  font-size: 32px;
+  letter-spacing: 2px;
+}
+
+.greeting h2 {
+  font-family: "Josefin Slab", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 72px;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.divider {
+  width: 100px;
+  height: 2px;
+  background-color: #ff0000;
+}
+
+.p {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+button {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 16px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #ff0000;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #920d0d;
+  color: #ffffff;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arrow-icon {
+  font-size: 20px;
+}
+
+.gallery-link:hover .arrow-icon {
+  transform: translateX(4px);
+  transition: transform 0.3s ease;
+}
+
+nav {
+  display: flex;
+  width: 100%;
+  background-color: #faf5f5;
+  color: #4d0303;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 0 80px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.logo span {
+  font-family: "Slabo 13px", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.gallery-container {
+  margin: 40px auto;
+  padding: 0 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.gallery-story {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.story-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 600px;
+}
+
+.story-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  max-width: 200px;
+}
+
+.story-left span {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
+}
+
+.story-left h2 {
+  font-family: "Josefin Slab", serif;
+  font-style: normal;
+  font-weight: 400;
+  width: 100%;
+  font-size: 56px;
+  letter-spacing: 2px;
+  margin: 0 2px;
+}
+
+.story-left p {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
+}
+
+.story-right span {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
+}
+
+.story-right .divider {
+  width: 50px;
+  height: 1px;
+  background-color: #ff0000;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.tabs button {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  padding: 12px 20px;
+  border: 1px solid #4d0303;
+  border-radius: 24px;
+  background-color: #faf5f5;
+  color: #4d0303;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background-color: #4d0303;
+  color: #ffffff;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow-x: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
