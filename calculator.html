@@ -17,7 +17,9 @@
     <main>
         <section>
             <div class="menu">
-                <span><i class="bi bi-list"></i></span>
+                <span onclick="showHistory()">
+                    <i class="bi bi-list"></i>
+                </span>
             </div>
             <div class="display">
                 <div class="output_screen">
@@ -31,11 +33,11 @@
                 <button onclick="clearr()" class="inp" id="ac-btn">C</button>
                 <button onclick="calculate('±')" class="inp">±</button>
                 <button onclick="calculate('%')" class="inp">%</button>
-                <button onclick="calculate('/')" class="inp">÷</button>
+                <button onclick="calculate('÷')" class="inp">÷</button>
                 <button onclick="calculate('7')" class="inp">7</button>
                 <button onclick="calculate('8')" class="inp">8</button>
                 <button onclick="calculate('9')" class="inp">9</button>
-                <button onclick="calculate('*')" class="inp">x</button>
+                <button onclick="calculate('×')" class="inp">x</button>
                 <button onclick="calculate('4')" class="inp">4</button>
                 <button onclick="calculate('5')" class="inp">5</button>
                 <button onclick="calculate('6')" class="inp">6</button>
@@ -44,10 +46,14 @@
                 <button onclick="calculate('2')" class="inp">2</button>
                 <button onclick="calculate('3')" class="inp">3</button>
                 <button onclick="calculate('+')" class="inp">+</button>
-                <button onclick="" class="inp"><i class="bi bi-calculator"></i></button>
+                <button class="inp"><i class="bi bi-calculator"></i></button>
                 <button onclick="calculate('0')" class="inp">0</button>
                 <button onclick="calculate('.')" class="inp">.</button>
                 <button onclick="answer()" class="inp">=</button>
+            </div>
+            <div class="history">
+                <h3>History</h3>
+                <ul id="history-list"></ul>
             </div>
         </section>
     </main>
@@ -57,6 +63,7 @@
     const inp = document.getElementById("input_S");
     const out = document.getElementById("output_S");
     const ac = document.getElementById("ac-btn");
+    const memory = [];
 
     function calculate(x) {
         inp.value += x;
@@ -75,18 +82,73 @@
     function answer() {
         try {
             const expression = inp.value
-            const result = eval(inp.value)
+            const sanitizedExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
+            const result = eval(sanitizedExpression)
             inp.value = result;
             out.value = expression;
+            memory.push(expression, result);
+            updateHistory();
             if (inp.value.length > 0 && out.value.length > 0) {
                 ac.innerHTML = "AC";
             } else {
                 ac.innerHTML = "C";
             }
+            console.log(memory);
         } catch {
             out.value = "Invalid";
         }
     }
+
+    function updateHistory() {
+        const historyList = document.getElementById("history-list");
+        historyList.innerHTML = "";
+        for (let i = 0; i < memory.length; i += 2) {
+            const expression = memory[i];
+            const result = memory[i + 1];
+            const listItem = document.createElement("li");
+            listItem.textContent = `${expression} = ${result}`;
+            historyList.appendChild(listItem);
+        }
+    }
+
+    function showHistory() {
+        const historyDiv = document.querySelector(".history");
+        const historyBtn = document.querySelector(".menu span");
+        historyDiv.style.display = historyDiv.style.display === "flex" ? "none" : "flex";
+        if (historyDiv.style.display === "flex") {
+            historyBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+        } else {
+            historyBtn.innerHTML = '<i class="bi bi-list"></i>';
+        }
+    }
+
+    // Keyboard support listener
+    window.addEventListener("keydown", function (event) {
+        const key = event.key;
+
+        // Numbers, dots, standard operators
+        if (!isNaN(key) || key === "+" || key === "-") {
+            calculate(key);
+        } else if (key === "*") {
+            calculate("×"); // Auto-convert * to × on keyboard press
+        } else if (key === "/") {
+            event.preventDefault(); // Prevents browser quick-search hotkey
+            calculate("÷"); // Auto-convert / to ÷ on keyboard press
+        } else if (key === "%") {
+            calculate("%");
+        } else if (key === "." || key === ",") {
+            calculate(".");
+        } else if (key === "Enter" || key === "=") {
+            event.preventDefault();
+            answer();
+        } else if (key === "Backspace") {
+            clearr();
+        } else if (key === "Escape") {
+            inp.value = "";
+            out.value = "";
+            ac.innerHTML = "C";
+        }
+    });
 </script>
 
 </html>
