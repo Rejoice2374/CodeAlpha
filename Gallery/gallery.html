@@ -15,12 +15,13 @@
 
 <body>
     <nav>
-        <div class="logo">
-            <i class="bi bi-door-closed"></i><span>Alpha Art Gallery</span>
+        <div class="navbar">
+            <div class="logo">
+                <i class="bi bi-door-closed"></i><span>Alpha Art Gallery</span>
+            </div>
         </div>
     </nav>
     <div class="gallery-container">
-
         <div class="gallery-story">
             <div class="story-left">
                 <span>OUR COLLECTION</span>
@@ -34,41 +35,111 @@
             </div>
         </div>
         <div class="tabs">
-            <button class="tab-button active">All</button>
-            <button class="tab-button">Paintings</button>
-            <button class="tab-button">Digital Art</button>
-            <button class="tab-button">Photography</button>
-            <button class="tab-button">Illustrations</button>
-            <button class="tab-button">Mixed Media</button>
+            <button class="tab-button active" onclick="filterList('All')">All</button>
+            <button class="tab-button" onclick="filterList('Paintings')">Paintings</button>
+            <button class="tab-button" onclick="filterList('Digital Art')">Digital Art</button>
+            <button class="tab-button" onclick="filterList('Photography')">Photography</button>
+            <button class="tab-button" onclick="filterList('Illustrations')">Illustrations</button>
+            <button class="tab-button" onclick="filterList('Mixed Media')">Mixed Media</button>
         </div>
         <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="GalleryArt/rebelkin__1.JPG" alt="Art 1">
-                <div class="overlay">
-                    <h3>Art Title 1</h3>
-                    <p>Artist Name</p>
-                    <p>Category</p>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <img src="GalleryArt/rebelkin__2.JPG" alt="Art 2">
-                <div class="overlay">
-                    <h3>Art Title 2</h3>
-                    <p>Artist Name</p>
-                    <p>Category</p>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <img src="GalleryArt/rebelkin__3.JPG" alt="Art 3">
-                <div class="overlay">
-                    <h3>Art Title 3</h3>
-                    <p>Artist Name</p>
-                    <p>Category</p>
-                </div>
-            </div>
-            <!-- Add more gallery items as needed -->
+        </div>
+        <div id="imageModal" class="modal">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img class="modal-content" id="modalImage" src="">
+            <span onclick="previousImage()" class="left"><i class="bi bi-arrow-left"></i></span>
+            <span onclick="nextImage()" class="right"><i class="bi bi-arrow-right"></i></span>
         </div>
     </div>
 </body>
+<script>
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const GalleryItems = [
+        { imageSrc: 'GalleryArt/rebelkin__1.JPG', title: 'Art Title 1', artist: 'Artist Name', category: 'Paintings' },
+        { imageSrc: 'GalleryArt/rebelkin__2.JPG', title: 'Art Title 2', artist: 'Artist Name', category: 'Digital Art' },
+        { imageSrc: 'GalleryArt/rebelkin__3.JPG', title: 'Art Title 3', artist: 'Artist Name', category: 'Photography' },
+        { imageSrc: 'GalleryArt/rebelkin__4.JPG', title: 'Art Title 4', artist: 'Artist Name', category: 'Illustrations' },
+        { imageSrc: 'GalleryArt/rebelkin__5.JPG', title: 'Art Title 5', artist: 'Artist Name', category: 'Mixed Media' },
+        { imageSrc: 'GalleryArt/rebelkin__6.JPG', title: 'Art Title 6', artist: 'Artist Name', category: 'Paintings' },
+        { imageSrc: 'GalleryArt/rebelkin__7.JPG', title: 'Art Title 7', artist: 'Artist Name', category: 'Digital Art' },
+        { imageSrc: 'GalleryArt/rebelkin__8.JPG', title: 'Art Title 8', artist: 'Artist Name', category: 'Photography' },
+        { imageSrc: 'GalleryArt/rebelkin__9.JPG', title: 'Art Title 9', artist: 'Artist Name', category: 'Illustrations' },
+        { imageSrc: 'GalleryArt/rebelkin__10.JPG', title: 'Art Title 10', artist: 'Artist Name', category: 'Mixed Media' },
+        { imageSrc: 'GalleryArt/rebelkin__11.JPG', title: 'Art Title 11', artist: 'Artist Name', category: 'Paintings' },
+        { imageSrc: 'GalleryArt/rebelkin__12.JPG', title: 'Art Title 12', artist: 'Artist Name', category: 'Digital Art' }
+    ];
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const galleryGrid = document.querySelector('.gallery-grid');
+    // Tracks currently displayed items (changes when filtering)
+    let currentDisplayedItems = [...GalleryItems];
+    let currentModalIndex = 0;
+
+    // Gallery items dynamic renderer
+    function renderGallery(items) {
+        galleryGrid.innerHTML = items.map((item, index) => `
+            <div class="gallery-item" onclick="openImageModal(${index})">
+                <img src="${item.imageSrc}" alt="${item.title}">
+                <div class="overlay">
+                    <h3>${item.title}</h3>
+                    <p>${item.artist}</p>
+                    <p>${item.category}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterList(category) {
+        currentDisplayedItems = category === 'All'
+            ? GalleryItems
+            : GalleryItems.filter(item => item.category === category);
+
+        renderGallery(currentDisplayedItems);
+
+        tabButtons.forEach(button => button.classList.remove('active'));
+        document.querySelector(`.tab-button[onclick="filterList('${category}')"]`).classList.add('active');
+    }
+
+    function openImageModal(index) {
+        currentModalIndex = index;
+        modalImg.src = currentDisplayedItems[currentModalIndex].imageSrc;
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none'
+    }
+
+    function nextImage() {
+        if (!currentDisplayedItems.length) return;
+        currentModalIndex = (currentModalIndex + 1) % currentDisplayedItems.length;
+        modalImg.src = currentDisplayedItems[currentModalIndex].imageSrc;
+    }
+
+    function previousImage() {
+        if (!currentDisplayedItems.length) return;
+        currentModalIndex = (currentModalIndex - 1 + currentDisplayedItems.length) % currentDisplayedItems.length;
+        modalImg.src = currentDisplayedItems[currentModalIndex].imageSrc;
+    }
+
+    // Close modal when clicking outside the image content
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+
+    // Keyboard navigation (Escape to close, Arrow keys for prev/next)
+    document.addEventListener('keydown', function (event) {
+        if (modal.style.display === 'block') {
+            if (event.key === 'ArrowRight') nextImage();
+            if (event.key === 'ArrowLeft') previousImage();
+            if (event.key === 'Escape') closeModal();
+        }
+    })
+
+    renderGallery(GalleryItems);
+
+</script>
 
 </html>
