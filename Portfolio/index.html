@@ -25,7 +25,9 @@
                     <a class="softlinks" href="#projects">Projects</a>
                 </div>
 
-                <div class="contact"><i class="bi bi-chat-text"></i></div>
+                <a href="#contact">
+                    <div class="contact" onclick="closenav()"><i class="bi bi-chat-text"></i></div>
+                </a>
                 <div class="menu">
                     <span onclick="toggleMenu()">
                         <i class="bi bi-list"></i>
@@ -33,313 +35,322 @@
                 </div>
             </div>
             <div class="mobile-navlinks" id="nav">
-                <a href="#" onclick="closenav()">Home</a>
-                <a href="#about" onclick="closenav()">About</a>
-                <a href="#projects" onclick="closenav()">Projects</a>
+                <a href="#home" onclick="closeNav()">Home</a>
+                <a href="#about" onclick="closeNav()">About</a>
+                <a href="#projects" onclick="closeNav()">Projects</a>
                 <button onclick="closenav()"><a href="#contact">Book a call</a></button>
             </div>
         </div>
     </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="intro">
-                <span class="hello">Hey, I'm Rejoice 👋</span>
-                <h2 class="role">Full<span class="rolespan">stack Developer</span></h2>
-                <p class="qtip">I'm a full-stack developer based in Nigeria, I'll help you build beautiful websites your
-                    users will
-                    love.</p>
-                <div class="actbtn">
-                    <button class="getIn"><a href="">Get In Touch</a></button>
-                    <button class="browse"><a href="">Browse Projects</a></button>
+    <main class="view">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="intro block">
+                    <span class="hello">Hey, I'm Rejoice 👋</span>
+                    <h2 class="role">Full<span class="rolespan">stack Developer</span></h2>
+                    <p class="qtip">I'm a full-stack developer based in Nigeria, I'll help you build beautiful websites
+                        your
+                        users will
+                        love.</p>
+                    <div class="actbtn">
+                        <button class="getIn"><a href="">Get In Touch</a></button>
+                        <button class="browse"><a href="">Browse Projects</a></button>
+                    </div>
+                </div>
+                <div class="intro-img block">
+                    <div class="img-grad">
+                        <img src="Favo1.png" alt="">
+                    </div>
                 </div>
             </div>
-            <div class="intro-img">
-                <div class="img-grad">
-                    <img src="Favo1.png" alt="">
-                </div>
-            </div>
+        </section>
+        <div class="scroll">
+            <div class="ball"></div>
         </div>
-    </section>
-    <div class="scroll">
-        <div class="ball"></div>
-    </div>
-    <!-- About Section -->
-    <section class="about" id="about">
-        <div class="about-container">
-            <div class="about-me">
-                <h2>About me<span class="dot">.</span></h2>
-                <p>My mission is to help startups and businesses turn ideas into impactful software solutions that solve
-                    real-world
-                    problems, deliver seamless user experiences, and build lasting connections between products and the
-                    people who use them.</p>
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="about-container">
+                <div class="about-me block">
+                    <h2>About me<span class="dot">.</span></h2>
+                    <p>My mission is to help startups and businesses turn ideas into impactful software solutions that
+                        solve
+                        real-world
+                        problems, deliver seamless user experiences, and build lasting connections between products and
+                        the
+                        people who use them.</p>
+                </div>
+                <div class="services">
+                    <span>How Can I Assist You?</span>
+                    <div class="service-container">
+                        <article class="service-card block">
+                            <div class="service-up">
+                                <div class="service-icon">
+                                    <span><i class="bi bi-javascript"></i></span>
+                                </div>
+                                <div class="serv-text">
+                                    <p>I build responsive, interactive, and visually engaging user interfaces that
+                                        deliver
+                                        seamless user experiences, ensuring
+                                        your website or application looks great and works smoothly across all devices.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="service-down">
+                                <h4>Frontend Development</h4>
+                                <span>01</span>
+                            </div>
+                        </article>
+                        <article class="service-card block">
+                            <div class="service-up">
+                                <div class="service-icon">
+                                    <span><i class="bi bi-server"></i></span>
+                                </div>
+                                <div class="serv-text">
+                                    <p>I develop secure, scalable, and efficient server-side systems that power your
+                                        applications, manage data, and handle
+                                        business logic to ensure reliable performance and seamless functionality.</p>
+                                </div>
+                            </div>
+                            <div class="service-down">
+                                <h4>Backend Development</h4>
+                                <span>02</span>
+                            </div>
+                        </article>
+                        <article class="service-card block">
+                            <div class="service-up">
+                                <div class="service-icon">
+                                    <span><i class="bi bi-window-stack"></i></span>
+                                </div>
+                                <div class="serv-text">
+                                    <p>I transform ideas into functional software solutions that solve real-world
+                                        problems,
+                                        streamline processes, and deliver
+                                        meaningful value through reliable, user-focused technology.</p>
+                                </div>
+                            </div>
+                            <div class="service-down">
+                                <h4>Software Development</h4>
+                                <span>03</span>
+                            </div>
+                        </article>
+                        <article class="service-card block">
+                            <div class="service-up">
+                                <div class="service-icon">
+                                    <span><i class="bi bi-terminal"></i></span>
+                                </div>
+                                <div class="serv-text">
+                                    <p>I test and evaluate software to identify bugs, verify functionality, and ensure
+                                        reliability, helping deliver stable,
+                                        secure, and high-quality applications that meet user expectations.</p>
+                                </div>
+                            </div>
+                            <div class="service-down">
+                                <h4>Quality Assurance</h4>
+                                <span>04</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
             </div>
-            <div class="services">
-                <span>How Can I Assist You?</span>
-                <div class="service-container">
-                    <article class="service-card">
-                        <div class="service-up">
-                            <div class="service-icon">
-                                <span><i class="bi bi-javascript"></i></span>
-                            </div>
-                            <div class="serv-text">
-                                <p>I build responsive, interactive, and visually engaging user interfaces that deliver
-                                    seamless user experiences, ensuring
-                                    your website or application looks great and works smoothly across all devices.</p>
-                            </div>
+        </section>
+        <!-- Projects Section -->
+        <section class="projects" id="projects">
+            <div class="projects_container">
+                <div class="left">
+                    <h4>Selected Works</h4>
+                    <button>See All</button>
+                </div>
+                <div class="projects-card">
+                    <article class="card block">
+                        <div class="image">
+                            <img src="meritcircle.png" alt="">
                         </div>
-                        <div class="service-down">
-                            <h4>Frontend Development</h4>
-                            <span>01</span>
+                        <div class="card-text">
+                            <span>MERIT CIRCLE</span>
+                            <span>2022</span>
+                        </div>
+                        <div class="card-text2">
+                            <span class="cts1">FRONTEND DEV</span>
+                            <span class="cts2">BACKEND DEV</span>
                         </div>
                     </article>
-                    <article class="service-card">
-                        <div class="service-up">
-                            <div class="service-icon">
-                                <span><i class="bi bi-server"></i></span>
-                            </div>
-                            <div class="serv-text">
-                                <p>I develop secure, scalable, and efficient server-side systems that power your
-                                    applications, manage data, and handle
-                                    business logic to ensure reliable performance and seamless functionality.</p>
-                            </div>
+                    <article class="card block">
+                        <div class="image">
+                            <img src="oneOfWun.png" alt="">
                         </div>
-                        <div class="service-down">
-                            <h4>Backend Development</h4>
-                            <span>02</span>
+                        <div class="card-text">
+                            <span>ONE-OF-WUN</span>
+                            <span>2024</span>
+                        </div>
+                        <div class="card-text2">
+                            <span class="cts1">FRONTEND DEV</span>
+                            <span class="cts2">MOBILE DEV</span>
                         </div>
                     </article>
-                    <article class="service-card">
-                        <div class="service-up">
-                            <div class="service-icon">
-                                <span><i class="bi bi-window-stack"></i></span>
-                            </div>
-                            <div class="serv-text">
-                                <p>I transform ideas into functional software solutions that solve real-world problems,
-                                    streamline processes, and deliver
-                                    meaningful value through reliable, user-focused technology.</p>
-                            </div>
+                    <article class="card block">
+                        <div class="image">
+                            <img src="cellarBros.png" alt="">
                         </div>
-                        <div class="service-down">
-                            <h4>Software Development</h4>
-                            <span>03</span>
+                        <div class="card-text">
+                            <span>CELLAR BROTHERS</span>
+                            <span>2026</span>
+                        </div>
+                        <div class="card-text2">
+                            <span class="cts1">FRONTEND DEV</span>
+                            <span class="cts3">QA</span>
                         </div>
                     </article>
-                    <article class="service-card">
-                        <div class="service-up">
-                            <div class="service-icon">
-                                <span><i class="bi bi-terminal"></i></span>
-                            </div>
-                            <div class="serv-text">
-                                <p>I test and evaluate software to identify bugs, verify functionality, and ensure
-                                    reliability, helping deliver stable,
-                                    secure, and high-quality applications that meet user expectations.</p>
-                            </div>
+                    <article class="card block">
+                        <div class="image">
+                            <img src="favotech.png" alt="">
                         </div>
-                        <div class="service-down">
-                            <h4>Quality Assurance</h4>
-                            <span>04</span>
+                        <div class="card-text">
+                            <span>FAVOTECH</span>
+                            <span>2026</span>
+                        </div>
+                        <div class="card-text2">
+                            <span class="cts1">FRONTEND DEV</span>
+                            <span class="cts2">BACKEND DEV</span>
+                        </div>
+                    </article>
+                    <article class="card block">
+                        <div class="image">
+                            <img src="Habitcheck.png" alt="">
+                        </div>
+                        <div class="card-text">
+                            <span>HABIT CHECK</span>
+                            <span>2025</span>
+                        </div>
+                        <div class="card-text2">
+                            <span class="cts3">QA</span>
+                            <span class="cts2">BACKEND DEV</span>
                         </div>
                     </article>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- Projects Section -->
-    <section class="projects" id="projects">
-        <div class="projects_container">
-            <div class="left">
-                <h4>Selected Works</h4>
-                <button>See All</button>
-            </div>
-            <div class="projects-card">
-                <article class="card">
-                    <div class="image">
-                        <img src="meritcircle.png" alt="">
-                    </div>
-                    <div class="card-text">
-                        <span>MERIT CIRCLE</span>
-                        <span>2022</span>
-                    </div>
-                    <div class="card-text2">
-                        <span class="cts1">FRONTEND DEV</span>
-                        <span class="cts2">BACKEND DEV</span>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="image">
-                        <img src="oneOfWun.png" alt="">
-                    </div>
-                    <div class="card-text">
-                        <span>ONE-OF-WUN</span>
-                        <span>2024</span>
-                    </div>
-                    <div class="card-text2">
-                        <span class="cts1">FRONTEND DEV</span>
-                        <span class="cts2">MOBILE DEV</span>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="image">
-                        <img src="cellarBros.png" alt="">
-                    </div>
-                    <div class="card-text">
-                        <span>CELLAR BROTHERS</span>
-                        <span>2026</span>
-                    </div>
-                    <div class="card-text2">
-                        <span class="cts1">FRONTEND DEV</span>
-                        <span class="cts3">QA</span>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="image">
-                        <img src="favotech.png" alt="">
-                    </div>
-                    <div class="card-text">
-                        <span>FAVOTECH</span>
-                        <span>2026</span>
-                    </div>
-                    <div class="card-text2">
-                        <span class="cts1">FRONTEND DEV</span>
-                        <span class="cts2">BACKEND DEV</span>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="image">
-                        <img src="Habitcheck.png" alt="">
-                    </div>
-                    <div class="card-text">
-                        <span>HABIT CHECK</span>
-                        <span>2025</span>
-                    </div>
-                    <div class="card-text2">
-                        <span class="cts3">QA</span>
-                        <span class="cts2">BACKEND DEV</span>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- EXPERIENCE SECTION -->
-    <section class="experience">
-        <div class="exp-container">
-            <div class="exp-card">
-                <div class="exp-head">Wanna see my experience?</div>
-                <button>
-                    <a href="Rejoice-Adeboye-Resume.pdf" download>
-                        Download Resume
-                        <span><i class="bi bi-download"></i></span>
-                    </a>
-                </button>
-            </div>
-            <div class="exp-card">
-                <div class="exp-img"><img src="habitchecklg.png" alt="Habit Check Logo"></div>
-                <span>Full-stack Developer at HabitCheck</span>
-                <span>2025-2026</span>
-            </div>
-            <div class="exp-card">
-                <div class="exp-img"><img src="CellarLogo.png" alt="Cellar Brothers Logo"></div>
-                <span>Frontend Developer at Cellar Brothers</span>
-                <span>2023-2026</span>
-            </div>
-            <div class="exp-card">
-                <div class="exp-img"><img src="Favotechmd.PNG" alt="Favotech Logo"></div>
-                <span>Founder &amp; CEO at Favotech</span>
-                <span>Present</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact-me" id="contact">
-        <div class="contact-container">
-            <div class="contact-head">
-                <h3>Contact with me to sizzle your project</h3>
-                <p>Feel free to contact me if having any questions. I'm available for new projects or just for chatting.
-                </p>
-            </div>
-            <div class="form-div">
-                <form action="submit">
-                    <div class="sender-info">
-                        <input type="text" name="name" placeholder="Name" required>
-                        <input type="email" name="email" placeholder="Email" required>
-                    </div>
-                    <textarea name="message" id="message" placeholder="Describe your project..." rows="6"
-                        required></textarea>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <section class="CTA">
-        <div class="ctafoot">
-            <div class="up">
-                <div class="letsCon">
-                    <h3>Let's connect and chat</h3>
-                    <span>FAVOCHINOINC@GMAIL.COM <i class="bi bi-arrow-up-right-circle-fill"></i></span>
+        <!-- EXPERIENCE SECTION -->
+        <section class="experience">
+            <div class="exp-container">
+                <div class="exp-card block">
+                    <div class="exp-head">Wanna see my experience?</div>
+                    <button>
+                        <a href="Rejoice-Adeboye-Resume.pdf" download>
+                            Download Resume
+                            <span><i class="bi bi-download"></i></span>
+                        </a>
+                    </button>
                 </div>
-                <!-- Socios card -->
-                <div class="social-playground" id="playground" aria-label="Interactive floating social media icons">
-                    <a href="https://www.x.com/rejoicethedev/" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="X">
-                            <i class="bi bi-twitter-x"></i>
-                        </div>
-                    </a>
-
-                    <a href="https://www.instagram.com/favochino23/" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="Instagram">
-                            <i class="bi bi-instagram"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="GitHub">
-                            <i class="bi bi-github"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="LinkedIn">
-                            <i class="bi bi-linkedin"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="YouTube">
-                            <i class="bi bi-youtube"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="Telegram">
-                            <i class="bi bi-telegram"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="TikTok">
-                            <i class="bi bi-tiktok"></i>
-                        </div>
-                    </a>
-
-                    <a href="" target="_blank">
-                        <div class="social-icon" role="button" tabindex="0" aria-label="Whatsapp">
-                            <i class="bi bi-whatsapp"></i>
-                        </div>
-                    </a>
+                <div class="exp-card block">
+                    <div class="exp-img"><img src="habitchecklg.png" alt="Habit Check Logo"></div>
+                    <span>Full-stack Developer at HabitCheck</span>
+                    <span>2025-2026</span>
+                </div>
+                <div class="exp-card block">
+                    <div class="exp-img"><img src="CellarLogo.png" alt="Cellar Brothers Logo"></div>
+                    <span>Frontend Developer at Cellar Brothers</span>
+                    <span>2023-2026</span>
+                </div>
+                <div class="exp-card block">
+                    <div class="exp-img"><img src="Favotechmd.PNG" alt="Favotech Logo"></div>
+                    <span>Founder &amp; CEO at Favotech</span>
+                    <span>Present</span>
                 </div>
             </div>
-            <div class="down">
-                <span>FAVOCHINO</span>
-                <span>copyright 2026</span>
-                <button><a href="#contact">Book a call</a></button>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-me" id="contact">
+            <div class="contact-container">
+                <div class="contact-head block">
+                    <h3>Contact with me to sizzle your project</h3>
+                    <p>Feel free to contact me if having any questions. I'm available for new projects or just for
+                        chatting.
+                    </p>
+                </div>
+                <div class="form-div block">
+                    <form action="submit">
+                        <div class="sender-info">
+                            <input type="text" name="name" placeholder="Name" required>
+                            <input type="email" name="email" placeholder="Email" required>
+                        </div>
+                        <textarea name="message" class=" id=" message" placeholder="Describe your project..." rows="6"
+                            required></textarea>
+                        <button class=" type=" submit">Submit</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="CTA">
+            <div class="ctafoot">
+                <div class="up">
+                    <div class="letsCon block">
+                        <h3>Let's connect and chat</h3>
+                        <span>FAVOCHINOINC@GMAIL.COM <i class="bi bi-arrow-up-right-circle-fill"></i></span>
+                    </div>
+                    <!-- Socios card -->
+                    <div class="social-playground block" id="playground"
+                        aria-label="Interactive floating social media icons">
+                        <a href="https://www.x.com/rejoicethedev/" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="X">
+                                <i class="bi bi-twitter-x"></i>
+                            </div>
+                        </a>
+
+                        <a href="https://www.instagram.com/favochino23/" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="GitHub">
+                                <i class="bi bi-github"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="YouTube">
+                                <i class="bi bi-youtube"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="Telegram">
+                                <i class="bi bi-telegram"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="TikTok">
+                                <i class="bi bi-tiktok"></i>
+                            </div>
+                        </a>
+
+                        <a href="" target="_blank">
+                            <div class="social-icon" role="button" tabindex="0" aria-label="Whatsapp">
+                                <i class="bi bi-whatsapp"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="down block">
+                    <span>FAVOCHINO</span>
+                    <span>copyright 2026</span>
+                    <button><a href="#contact">Book a call</a></button>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 
 <script>
@@ -362,6 +373,24 @@
             navBtn.innerHTML = '<i class="bi bi-list"></i>';
         }
     }
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("show");
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.15,
+        }
+    );
+
+    document.querySelectorAll(".block").forEach((element) => {
+        observer.observe(element);
+    });
 </script>
 
 </html>

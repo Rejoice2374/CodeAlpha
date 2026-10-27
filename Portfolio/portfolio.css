@@ -30,6 +30,14 @@ p {
   display: none;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 90px;
+}
+
 .nunito {
   font-family: "Nunito", sans-serif;
   font-optical-sizing: auto;
@@ -1078,14 +1086,17 @@ button:hover {
 
   .projects_container {
     flex-direction: column;
-    padding: 16px;
+    padding: 0 16px 16px;
     border-radius: 20px;
     gap: 20px;
   }
 
   .left {
-    align-items: center;
+    background: #f8edfd;
+    width: 100%;
+    padding: 16px 0;
     gap: 12px;
+    z-index: 10;
   }
 
   .left h4 {
@@ -1094,9 +1105,209 @@ button:hover {
 
   .left button {
     padding: 10px 16px;
+    width: 40%;
+  }
+
+  .exp-container {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .exp-card {
+    min-height: 190px;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .exp-head {
+    font-size: 32px;
+  }
+
+  .exp-card button {
+    width: fit-content;
+  }
+
+  .exp-img {
+    height: 75px;
+  }
+
+  .exp-img img {
+    max-width: 150px;
+  }
+
+  .exp-card > span {
+    font-size: 16px;
+  }
+
+  .contact-container {
+    gap: 28px;
+  }
+
+  .contact-head {
+    gap: 12px;
+  }
+
+  .contact-head h3 {
+    font-size: clamp(28px, 8vw, 36px);
+  }
+
+  .contact-head p {
+    font-size: 16px;
+  }
+
+  .ctafoot {
+    width: 100%;
+    padding: 0 12px;
+    gap: 16px;
+  }
+
+  .up {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  /* Contact card */
+  .letsCon {
+    width: 100%;
+    height: auto;
+    min-height: 240px;
+    padding: 24px;
+    gap: 40px;
+    border-radius: 22px;
+  }
+
+  .letsCon h3 {
+    font-size: clamp(42px, 11vw, 60px);
+    line-height: 0.95;
+    overflow-wrap: break-word;
+  }
+
+  .letsCon span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: clamp(13px, 3.5vw, 17px);
+    overflow-wrap: anywhere;
+  }
+
+  .letsCon span i {
+    flex-shrink: 0;
+  }
+
+  /* Social media playground */
+  .social-playground {
+    width: 100%;
+    min-height: 260px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 8px;
+    padding: 24px 12px;
+    border-radius: 22px;
+  }
+
+  .social-icon {
+    width: clamp(44px, 13vw, 56px);
+    height: clamp(44px, 13vw, 56px);
+    border-radius: 15px;
+    animation-duration: 3.5s;
+  }
+
+  .social-icon i {
+    font-size: clamp(20px, 6vw, 25px);
+  }
+
+  /* Bottom footer */
+  .down {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 14px;
+    font-size: 13px;
+  }
+
+  .down span:first-child {
+    font-weight: 700;
+  }
+
+  .down span:nth-child(2) {
+    font-size: 12px;
+  }
+
+  .down button {
+    padding: 11px 16px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
+
+  .down button a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 380px) {
+  .letsCon {
+    padding: 20px;
+  }
+
+  .letsCon h3 {
+    font-size: 40px;
+  }
+
+  .letsCon span {
+    font-size: 12px;
   }
 
   .social-playground {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px 4px;
+    padding: 20px 8px;
+  }
+
+  .social-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .social-icon i {
+    font-size: 19px;
+  }
+
+  .down {
+    padding: 14px;
+    gap: 12px;
+  }
+}
+
+/* Apply scroll animations only where supported */
+.block {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.block.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .social-icon {
+    animation: none;
+  }
+
+  .block {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
