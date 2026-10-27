@@ -11,6 +11,22 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="portfolio.css">
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@5/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init({
+                publicKey: "xce43AjbkHtGhTPIm",
+            });
+        })();
+    </script>
+    <script src="
+    https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js
+    "></script>
+    <link href="
+    https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.min.css
+    " rel="stylesheet">
     <title>Favofolio</title>
 </head>
 
@@ -271,14 +287,14 @@
                     </p>
                 </div>
                 <div class="form-div block">
-                    <form action="submit">
+                    <form onsubmit="sendMail(event)">
                         <div class="sender-info">
-                            <input type="text" name="name" placeholder="Name" required>
-                            <input type="email" name="email" placeholder="Email" required>
+                            <input type="text" id="name" placeholder="Name" required>
+                            <input type="email" id="email" placeholder="Email" required>
                         </div>
-                        <textarea name="message" class=" id=" message" placeholder="Describe your project..." rows="6"
+                        <textarea name="message" id="message" placeholder="Describe your project..." rows="6"
                             required></textarea>
-                        <button class=" type=" submit">Submit</button>
+                        <button type="submit" id="formbtn">Send Message</button>
                     </form>
                 </div>
             </div>
@@ -356,6 +372,7 @@
 <script>
     const navMenu = document.getElementById("nav")
     const navBtn = document.querySelector(".menu span")
+    const Fbtn = document.getElementById("formbtn")
     function toggleMenu() {
         navMenu.style.display = navMenu.style.display === "flex" ? "none" : "flex";
         if (navMenu.style.display === "flex") {
@@ -391,6 +408,48 @@
     document.querySelectorAll(".block").forEach((element) => {
         observer.observe(element);
     });
+
+    async function sendMail(event) {
+        if (event) event.preventDefault();
+
+        const originalText = Fbtn.textContent;
+        Fbtn.disabled = true;
+        Fbtn.textContent = "Sending...";
+
+        const params = {
+            name: document.getElementById("name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            message: document.getElementById("message").value.trim(),
+        };
+
+        try {
+            await emailjs.send(
+                "service_s5dt1s4",
+                "template_6652rho",
+                params
+            );
+
+            await Swal.fire({
+                title: "Message sent!",
+                text: "Thank you for contacting Rejoice. I'll respond soon!",
+                icon: "success"
+            });
+
+            document.querySelector("form").reset();
+
+        } catch (error) {
+            console.error("EmailJS error:", error);
+
+            Swal.fire({
+                title: "Oops!",
+                text: "Your message couldn't be sent. Please try again.",
+                icon: "error"
+            });
+        } finally {
+            Fbtn.disabled = false;
+            Fbtn.textContent = originalText;
+        }
+    }
 </script>
 
 </html>
