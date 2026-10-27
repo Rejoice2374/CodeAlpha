@@ -16,21 +16,28 @@
 
 <body>
     <nav>
-        <div class="nav-desktop">
-            <div class="name">Rejoice A.A</div>
-            <!-- <div class="navlinks">
-                <a class="softlinks" href="#">Home</a>
-                <a class="softlinks" href="#about">About</a>
-                <a class="softlinks" href="#projects">Projects</a>
-            </div> -->
-            <div class="contact"><i class="bi bi-chat-text"></i></div>
-        </div>
-        <div class="mobile-navlinks">
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-            </ul>
+        <div class="navcontainer">
+            <div class="nav-desktop">
+                <div class="name">Rejoice A.A</div>
+                <div class="navlinks">
+                    <a class="softlinks" href="#">Home</a>
+                    <a class="softlinks" href="#about">About</a>
+                    <a class="softlinks" href="#projects">Projects</a>
+                </div>
+
+                <div class="contact"><i class="bi bi-chat-text"></i></div>
+                <div class="menu">
+                    <span onclick="toggleMenu()">
+                        <i class="bi bi-list"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="mobile-navlinks" id="nav">
+                <a href="#" onclick="closenav()">Home</a>
+                <a href="#about" onclick="closenav()">About</a>
+                <a href="#projects" onclick="closenav()">Projects</a>
+                <button onclick="closenav()"><a href="#contact">Book a call</a></button>
+            </div>
         </div>
     </nav>
 
@@ -40,7 +47,7 @@
             <div class="intro">
                 <span class="hello">Hey, I'm Rejoice 👋</span>
                 <h2 class="role">Full<span class="rolespan">stack Developer</span></h2>
-                <p class="qtip">I'm a full-stack developer based in italy, I'll help you build beautiful websites your
+                <p class="qtip">I'm a full-stack developer based in Nigeria, I'll help you build beautiful websites your
                     users will
                     love.</p>
                 <div class="actbtn">
@@ -59,7 +66,7 @@
         <div class="ball"></div>
     </div>
     <!-- About Section -->
-    <section class="about">
+    <section class="about" id="about">
         <div class="about-container">
             <div class="about-me">
                 <h2>About me<span class="dot">.</span></h2>
@@ -140,7 +147,7 @@
         </div>
     </section>
     <!-- Projects Section -->
-    <section class="projects">
+    <section class="projects" id="projects">
         <div class="projects_container">
             <div class="left">
                 <h4>Selected Works</h4>
@@ -247,7 +254,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section class="contact-me">
+    <section class="contact-me" id="contact">
         <div class="contact-container">
             <div class="contact-head">
                 <h3>Contact with me to sizzle your project</h3>
@@ -267,6 +274,94 @@
             </div>
         </div>
     </section>
+
+    <section class="CTA">
+        <div class="ctafoot">
+            <div class="up">
+                <div class="letsCon">
+                    <h3>Let's connect and chat</h3>
+                    <span>FAVOCHINOINC@GMAIL.COM <i class="bi bi-arrow-up-right-circle-fill"></i></span>
+                </div>
+                <!-- Socios card -->
+                <div class="social-playground" id="playground" aria-label="Interactive floating social media icons">
+                    <a href="https://www.x.com/rejoicethedev/" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="X">
+                            <i class="bi bi-twitter-x"></i>
+                        </div>
+                    </a>
+
+                    <a href="https://www.instagram.com/favochino23/" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="GitHub">
+                            <i class="bi bi-github"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="Telegram">
+                            <i class="bi bi-telegram"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="TikTok">
+                            <i class="bi bi-tiktok"></i>
+                        </div>
+                    </a>
+
+                    <a href="" target="_blank">
+                        <div class="social-icon" role="button" tabindex="0" aria-label="Whatsapp">
+                            <i class="bi bi-whatsapp"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="down">
+                <span>FAVOCHINO</span>
+                <span>copyright 2026</span>
+                <button><a href="#contact">Book a call</a></button>
+            </div>
+        </div>
+    </section>
 </body>
+
+<script>
+    const navMenu = document.getElementById("nav")
+    const navBtn = document.querySelector(".menu span")
+    function toggleMenu() {
+        navMenu.style.display = navMenu.style.display === "flex" ? "none" : "flex";
+        if (navMenu.style.display === "flex") {
+            navBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+        } else {
+            navBtn.innerHTML = '<i class="bi bi-list"></i>';
+        }
+    }
+
+    function closenav() {
+        navMenu.style.display = "none"
+        if (navMenu.style.display === "flex") {
+            navBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+        } else {
+            navBtn.innerHTML = '<i class="bi bi-list"></i>';
+        }
+    }
+</script>
 
 </html>
